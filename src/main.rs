@@ -1,5 +1,6 @@
 use anyhow::{Ok, Result};
 use clap::Parser;
+use std::process::Command;
 
 #[derive(Parser)]
 struct Cli {
@@ -12,11 +13,6 @@ struct Cli {
 fn main() -> Result<()> {
     let args = Cli::parse();
 
-    println!(
-        "command: {}, path: {:?}",
-        args.command, args.path_config_file
-    );
-
     let configs = node_flow::read_config_file(&args.path_config_file)?;
 
     let parsed_commands = node_flow::resolve_placeholder_in_commands(
@@ -25,8 +21,16 @@ fn main() -> Result<()> {
         &configs.package_manager,
     )?;
 
-    println!("config file > {:?}", configs);
     println!("parsed commands > {:?}", parsed_commands);
+
+    let output = Command::new("git")
+        .arg("pull")
+        .arg("origin")
+        .arg(configs.branch_name)
+        .output()
+        .expect("Erro to exec `git status`");
+
+    println!("{:?}", String::from_utf8_lossy(&output.stdout));
 
     Ok(())
 }
