@@ -1,5 +1,5 @@
 {
-  "branch_name": "feature/node-flow.json",
+  "branch_name": "main",
   "package_manager": "pnpm",
   "commands": [
     "{pm} i",
